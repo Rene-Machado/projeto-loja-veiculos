@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/veiculos}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+file:
+  upload-dir: ${VEHICLE_UPLOAD_DIR:/app/uploads}
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  jwt:
+    # Prefer providing a secret via environment variable `APP_JWT_SECRET` in production.
+    # Keep the existing value as a fallback for local development to avoid breaking running setups.
+    secret: ${APP_JWT_SECRET:9f8a7c6e5d4b3a2f1g0h9i8j7k6l5m4n}
+    expiration-ms: 86400000

@@ -1,0 +1,42 @@
+# Java / Maven
+target/
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Frontend build
+frontend/dist/
+dist/
+
+# Uploaded files and runtime artifacts
+backend/uploads/
+uploads/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.*
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / temp
+*~
+*.swp
+.sass-cache/
