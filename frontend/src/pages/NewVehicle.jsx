@@ -1,8 +1,11 @@
+import React from "react";
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { formatVehicleType } from "../utils/formatType";
+
+
 
 export default function NewVehicle() {
   const { user } = useAuth();
