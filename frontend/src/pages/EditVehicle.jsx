@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { formatVehicleType } from "../utils/formatType";
 
 export default function EditVehicle() {
   const { id } = useParams();
@@ -16,19 +15,18 @@ export default function EditVehicle() {
     type: "CAR",
   });
   const [images, setImages] = useState([]);
+  const [replace, setReplace] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [authError, setAuthError] = useState(null);
   const navigate = useNavigate();
 
-  // Verificar se o usuário é ADMIN
   useEffect(() => {
     if (!user || user.role !== "ADMIN") {
       setAuthError("Você precisa estar logado como ADMIN para editar veículos.");
     }
   }, [user]);
 
-  // Buscar dados do veículo
   useEffect(() => {
     async function fetchVehicle() {
       try {
@@ -70,7 +68,6 @@ export default function EditVehicle() {
     try {
       const fd = new FormData();
 
-      // vehicle JSON como parte 'vehicle'
       fd.append(
         "vehicle",
         new Blob(
@@ -88,17 +85,13 @@ export default function EditVehicle() {
         )
       );
 
-      // imagens (opcional)
       images.forEach((file) => fd.append("images", file));
 
       const token = localStorage.getItem("token");
-      console.log("Token presente:", !!token);
-      console.log("User role:", user?.role);
 
-      // if user selected images, request backend to replace existing images
-      const query = images && images.length > 0 ? '?replace=true' : '';
+      const query = `?replace=${replace}`;
       const resp = await api.put(`/api/admin/vehicles/${id}${query}`, fd, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       alert("Veículo atualizado com sucesso!");
@@ -106,8 +99,6 @@ export default function EditVehicle() {
       navigate(`/vehicles/${id}`);
     } catch (err) {
       console.error("Erro ao editar:", err);
-      console.error("Response status:", err.response?.status);
-      console.error("Response data:", err.response?.data);
       if (err.response?.status === 403) {
         setAuthError("Você não tem permissão para editar este veículo.");
         alert("Erro 403: Acesso negado.");
@@ -128,7 +119,12 @@ export default function EditVehicle() {
     }
   }
 
-  if (loading) return <div className="bg-black min-h-screen flex items-center justify-center text-white p-6">Carregando...</div>;
+  if (loading)
+    return (
+      <div className="bg-black min-h-screen flex items-center justify-center text-white p-6">
+        Carregando...
+      </div>
+    );
 
   return (
     <div className="bg-black min-h-screen flex items-center justify-center p-6">
@@ -212,15 +208,28 @@ export default function EditVehicle() {
             </select>
 
             <label className="text-sm text-gray-400">Adicionar imagens (opcional)</label>
-            <input 
-              type="file" 
-              accept="image/*" 
-              multiple 
+            <input
+              type="file"
+              accept="image/*"
+              multiple
               onChange={handleFiles}
               className="text-gray-400"
             />
 
-            <div className="flex gap-2">
+            <label className="flex items-center gap-2 text-gray-300 mt-2">
+              <input
+                type="checkbox"
+                checked={replace}
+                onChange={(e) => setReplace(e.target.checked)}
+              />
+              Substituir imagens existentes
+            </label>
+            <p className="text-xs text-gray-400">
+              Se marcado, todas as imagens atuais serão removidas e substituídas pelas novas.
+              Se desmarcado, as novas imagens serão adicionadas às existentes.
+            </p>
+
+            <div className="flex gap-2 mt-4">
               <button
                 type="submit"
                 disabled={saving}
