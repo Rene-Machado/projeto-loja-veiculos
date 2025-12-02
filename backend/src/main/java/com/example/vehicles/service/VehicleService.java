@@ -102,14 +102,17 @@ public class VehicleService {
     }
 
     public void delete(Long id) throws IOException {
-        Vehicle v = get(id);
-        if (v.getImagePaths() != null) {
-            for (String p : v.getImagePaths()) {
-                try { Files.deleteIfExists(Paths.get(uploadDir, p)); } catch (IOException ignored) {}
-            }
-            Path folder = Paths.get(uploadDir, String.valueOf(v.getId()));
-            try { Files.deleteIfExists(folder); } catch (IOException ignored) {}
+    Vehicle v = get(id);
+    if (v.getImagePaths() != null) {
+        Path folder = Paths.get(uploadDir, String.valueOf(v.getId()));
+        if (Files.exists(folder)) {
+            Files.walk(folder)
+                .sorted((a, b) -> b.compareTo(a)) 
+                .forEach(path -> {
+                    try { Files.deleteIfExists(path); } catch (IOException ignored) {}
+                });
         }
-        repo.deleteById(id);
+    }
+    repo.deleteById(id);
     }
 }

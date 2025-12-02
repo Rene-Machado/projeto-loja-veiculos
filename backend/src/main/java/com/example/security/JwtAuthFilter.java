@@ -37,9 +37,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String email = claims.getSubject();
                 String role = claims.get("role", String.class);
 
-                // Create Authentication from token claims directly. This avoids a DB lookup
-                // on every request. If you need to revoke users or check account status,
-                // re-introduce a repository check here.
                 var auth = new UsernamePasswordAuthenticationToken(
                     email,
                     null,

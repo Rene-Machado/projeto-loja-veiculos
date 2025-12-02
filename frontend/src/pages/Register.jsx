@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../api/axios"; // seu axios configurado com baseURL
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
@@ -15,6 +15,7 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+
     if (!email || !password) {
       setError("Preencha email e senha.");
       return;
@@ -27,7 +28,6 @@ export default function Register() {
     setLoading(true);
     try {
       await api.post("/api/auth/register", { email, password });
-      // login automático após registro
       await login(email, password);
       navigate("/");
     } catch (err) {
@@ -43,6 +43,13 @@ export default function Register() {
     <div className="bg-black min-h-screen flex items-center justify-center p-6">
       <div className="max-w-sm w-full p-6 border border-gray-700 rounded bg-gray-900 shadow">
         <h2 className="text-xl font-bold mb-4 text-center text-white">Registrar</h2>
+
+        {error && (
+          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-2 rounded mb-3">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="grid gap-3">
           <input
             className="bg-gray-800 text-white border border-gray-700 p-2 rounded placeholder-gray-500 focus:border-blue-500 outline-none"
@@ -50,6 +57,7 @@ export default function Register() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
           />
           <input
             className="bg-gray-800 text-white border border-gray-700 p-2 rounded placeholder-gray-500 focus:border-blue-500 outline-none"
@@ -57,6 +65,7 @@ export default function Register() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
           />
           <button
             type="submit"
@@ -65,7 +74,6 @@ export default function Register() {
           >
             {loading ? "Registrando..." : "Registrar"}
           </button>
-          {error && <div className="text-red-400 text-sm mt-2">{error}</div>}
         </form>
       </div>
     </div>
